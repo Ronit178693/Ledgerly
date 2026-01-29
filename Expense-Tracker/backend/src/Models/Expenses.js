@@ -13,56 +13,22 @@ const ExpenseSchema = new mongoose.Schema({
       min: 0,
     },
 
-    category: {
+    source: {
       type: String,
       required: true,
-    },
-
-    description: {
-      type: String,
-      trim: true,
     },
 
     date: {
       type: Date,
       default: Date.now,
     },
-
-    paymentMethod: {
+    
+    icon: {
       type: String,
-      enum: ["Cash", "Card", "UPI", "Bank Transfer", "Wallet", "Other"],
-      default: "Cash",
+      default: '💰',
     },
 
-    isRecurring: {
-      type: Boolean,
-      default: false,
-    },
 
-    recurringInterval: {
-      type: String,
-      enum: ["Daily", "Weekly", "Monthly", "Yearly"],
-      required: function () {
-        return this.isRecurring;
-      },
-    },
-
-    attachment: [
-      {
-        url: String, // image or PDF
-        uploadedAt: { 
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
-
-    tags: [String],
-
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
   },
   {
     timestamps: true, // adds createdAt + updatedAt automatically

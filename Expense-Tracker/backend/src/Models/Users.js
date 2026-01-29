@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
 const userSchema = new mongoose.Schema({
-      name: {
+    name: {
     type: String,
     required: [true, 'Please provide a name'],
     trim: true,
@@ -15,11 +15,6 @@ const userSchema = new mongoose.Schema({
     lowercase: true,
     match: [/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/, 'Please provide a valid email']
   },
-  phoneNumber: {
-    type: String,
-    required: [true, 'Please provide a phone number'],
-    match: [/^[0-9]{10}$/, 'Please provide a valid 10-digit phone number']
-  },
   password: {
     type: String,
     required: [true, 'Please provide a password'],
@@ -30,20 +25,15 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+},{
+  timestamps: true,
 });
 
-userSchema.pre('save', async function(next){
-  if(!this.isModified('password')){
-    return next(); // Prevents re-hashing if password is not modified
-  }
-  else{
-    const salt = 10;
-    this.password = await bcrypt.hash(this.password, salt)
-  }
-});
 
-userSchema.methods.comparePassword = async function(password){
-  return await bcrypt.compare(password, this.password);
+export const hashPassword = async (password) => {
+const salt = await bcrypt.genSalt(10);
+const hash = await bcrypt.hash(password, salt);
+return hash;
 }
 const User = mongoose.model('User', userSchema);
 

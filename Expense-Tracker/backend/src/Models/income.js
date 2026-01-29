@@ -19,52 +19,17 @@ const incomeSchema = new mongoose.Schema(
       required: true,
     },
 
-    description: {
-      type: String,
-      trim: true,
-    },
-
     date: {
       type: Date,
       default: Date.now,
     },
 
-    paymentMethod: {
+    icon: {
       type: String,
-      enum: ["Cash", "Bank Transfer", "UPI", "Cheque", "Crypto", "Other"],
-      default: "Bank Transfer",
+      default: '💰',
     },
+    
 
-    isRecurring: {
-      type: Boolean,
-      default: false,
-    },
-
-    recurringInterval: {
-      type: String,
-      enum: ["Weekly", "Monthly", "Quarterly", "Yearly"],
-      required: function () {
-        return this.isRecurring;
-      },
-    },
-
-    taxDeducted: {
-      type: Number,
-      min: 0,
-      default: 0,
-    },
-
-    attachment: [
-      {
-        url: String, // salary slip / invoice
-        uploadedAt: {
-          type: Date,
-          default: Date.now,
-        },
-      },
-    ],
-
-    tags: [String],
   },
   {
     timestamps: true,

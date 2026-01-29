@@ -1,66 +1,82 @@
 import User from '../Models/Users.js';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
+import { hashPassword } from '../Models/Users.js';
+import bcrypt from 'bcrypt';
 dotenv.config();
 
-// Generate JWT Token
-const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: '30d'
-  });
-};
 
 export const Signup = async (req, res) => {
-    try{
-        const {name, email, phoneNumber, password} = req.body;
-        const user = await User.findOne({email});
-        if(user){
-            return res.status(400).json({message: 'User already exists'});
+    try {
+        const { name, email, password } = req.body;
+        if (!name || !email || !password) {
+            return res.status(400).json({ success: false, message: 'Please provide all required fields' });
         }
-        else{
+        const user = await User.findOne({ email });
+        if (user) {
+            return res.status(400).json({ success: false, message: 'User already exists' });
+        }
+        else {
             const newUser = await User.create({
                 name,
                 email,
-                phoneNumber,
-                password
+                password: await hashPassword(password)
             });
-            const token = generateToken(newUser._id);
-            res.status(201).json({
-                _id: newUser._id,
-                name: newUser.name,
-                email: newUser.email,
-                phoneNumber: newUser.phoneNumber,
-                token
+            await newUser.save();
+            const token = jwt.sign({ Id: newUser._id }, process.env.JWT_SECRET_KEY, { expiresIn: '30d' });
+            res.cookie('token', token, {
+                httpOnly: true,
+                maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+                secure: process.env.NODE_ENV === 'production',
+                //sameSite: 'strict'
             });
+            // TODO: Consider removing token from body in future versions, as it is already set in cookie
+            return res.status(201).json({ success: true, message: 'User created successfully', token })
+
         }
     }
-    catch(error){
-        res.status(500).json({message: `Server Error: ${error.message}`});
+    catch (error) {
+        res.status(500).json({ success: false, message: `Server Error: ${error.message}` });
     }
 }
 
 export const Login = async (req, res) => {
-    try{
-        const {email, password} = req.body;
-        const user = await User.findOne({email}).select('+password');
-        if(!user){
-            res.status(400).json({message: 'Invalid email or password'});
+    try {
+        const { email, password } = req.body;
+        const user = await User.findOne({ email }).select('+password');
+        if (!email || !password) {
+            return res.status(400).json({ success: false, message: 'Please provide all required fields' });
         }
-        const isMatch = await user.comparePassword(password);
-        if(!isMatch){
-            res.status(400).json({message: 'Invalid email or password'});
+        if (!user) {
+            return res.status(400).json({ success: false, message: 'Invalid email or password' });
+        }
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: 'Invalid email or password' });
         }
 
-        const token = generateToken(user._id);
-        res.status(200).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            phoneNumber: user.phoneNumber,
-            token
+        const token = jwt.sign({ Id: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '30d' });
+        res.cookie('token', token, {
+            httpOnly: true,
+            maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
+            secure: process.env.NODE_ENV === 'production',
+            //sameSite: 'strict'
         });
+        return res.status(200).json({ success: true, message: 'Logged in successfully', token });
+
     }
-    catch(error){
-        res.status(500).json({message: `Server Error: ${error.message}`});
+    catch (error) {
+        res.status(500).json({ success: false, message: `Server Error: ${error.message}` });
     }
 }
+
+
+export const Logout = async (req, res) => {
+
+    try {
+        res.clearCookie('token');
+        res.status(200).json({ success: true, message: 'Logged out successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: `Server Error: ${error.message}` });
+    }
+}   

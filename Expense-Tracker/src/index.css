@@ -1,0 +1,101 @@
+/* Google Fonts Import */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* HSL Color Palette for dynamic adjustments */
+  --primary-h: 238;
+  --primary-s: 77%;
+  --primary-l: 66%;
+
+  --primary: hsl(var(--primary-h), var(--primary-s), var(--primary-l));
+  --primary-dark: hsl(263, 70%, 50%);
+
+  --bg-dark: #0f172a;
+  --bg-card: rgba(15, 23, 42, 0.95);
+
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --error: #ef4444;
+
+  --glass-border: rgba(148, 163, 184, 0.15);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
+}
+
+/* Modern Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155;
+  border-radius: 999px;
+  border: 2px solid var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569;
+}
+
+/* Global Selection Style */
+::selection {
+  background: var(--primary);
+  color: #fff;
+}
+
+/* Force remove borders from all footers as requested */
+footer,
+.footer,
+.login-footer,
+.signup-footer,
+.dashboard-footer {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Smooth Focus States */
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Utility Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}

@@ -1,55 +1,59 @@
 import Income from '../Models/income.js';
 
-export const addIncome = async(req, res) => {
+export const addIncome = async (req, res) => {
     const user = req.user._id;
-    const {amount, source, description, date, paymentMethod, isRecurring, recurringInterval, taxDeducted, attachment} = req.body;
-    try{
-            const newIncome = await Income.create({
-                user,
-                amount,
-                source,
-                description,
-                date : new Date(date),
-                paymentMethod,
-                isRecurring,
-                recurringInterval,
-                taxDeducted,
-                attachment
-            });
-            res.status(201).json({message: "Income added successfully", newIncome})
-        
+    const { amount, source, date, icon } = req.body;
+    if (!amount || !source || !date) {
+        return res.status(400).json({ success: false, message: "Please provide all required fields" });
     }
-    catch(error){
-        res.status(500).json({message: `Server Error: ${error.message}`});
+    try {
+        const newIncome = await Income.create({
+            user,
+            amount,
+            source,
+            date,
+            icon: icon || '💰'
+        });
+        return res.status(201).json({ success: true, message: "Income added successfully", newIncome })
+
+    }
+    catch (error) {
+        return res.status(500).json({ success: false, message: `Server Error: ${error.message}` });
     }
 }
 
-export const getIncome = async(req, res) => {
+export const getIncome = async (req, res) => {
     const user = req.user._id;
-    try{
-    const income = await Income.find({user})
-    res.status(200).json({income});
+    try {
+        const income = await Income.find({ user })
+        if (income.length === 0) {
+            return res.status(404).json({ success: false, message: "No income records found" });
+        }
+        else {
+        return res.status(200).json({ success: true, income });
     }
-    catch(error){
-        res.status(500).json({message: `Server Error: ${error.message}`});
+    }
+    catch (error) {
+        return res.status(500).json({ success: false, message: `Server Error: ${error.message}` });
     }
 }
 
-export const deleteIncome = async(req, res) => {
+export const deleteIncome = async (req, res) => {
     const userId = req.user._id;
-    const incomeId = req.params;
-    try{
-        const deletedIncome = await Income.findOneAndDelete({_id: incomeId, user: userId});
-        if(!deletedIncome){
-            return res.status(404).json({message: "Income not found"});
+    const incomeId = req.params.id;
+    try {
+        const deletedIncome = await Income.findOneAndDelete({ _id: incomeId, user: userId });
+        if (!deletedIncome) {
+            return res.status(404).json({ success: false, message: "Income not found" });
         }
-        else{
-            res.status(200).json({message: "Income deleted successfully"});
+        else {
+            return res.status(200).json({ success: true, message: "Income deleted successfully" });
         }
     }
-catch(error){
-    res.status(500).json({message: `Server Error: ${error.message}`});
-}}
+    catch (error) {
+        return res.status(500).json({ success: false, message: `Server Error: ${error.message}` });
+    }
+}
 
 
 
