@@ -119,7 +119,7 @@ const AddIncome = ({ isOpen, onClose, onSuccess }) => {
             />
           </div>
 
-          {/* Icon Picker */}
+          
           <div className="income-form-field">
             <label className="income-form-label">
               <span style={{ fontSize: '18px', marginRight: '8px' }}>🎨</span>

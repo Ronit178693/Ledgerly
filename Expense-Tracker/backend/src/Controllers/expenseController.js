@@ -11,8 +11,7 @@ export const addExpense = async(req, res) => {
                 user,
                 amount,
                 source,
-                date,
-                icon
+                date
             });
             return res.status(201).json({success: true, message: "Expense added successfully", newExpense})
         

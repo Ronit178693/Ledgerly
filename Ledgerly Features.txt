@@ -1,0 +1,32 @@
+HEADER FEATURES:
+Total Balance, Total Income, Total Expenses
+
+HERO FEATURES:
+Recent Transections
+Financial Overview
+Expanses
+Last 30 days income vs expenses
+income
+
+
+INCOME FEATURES:
+Income Overview
+Income Source
+Add Income{
+Income Source,
+Amount,
+Date,
+Logo
+}
+Delete Income
+
+EXPENSE FEATURES:
+All Expenses
+Add Expense{
+Category,
+Amount,
+Date,
+Logo
+
+}
+Delete Expense

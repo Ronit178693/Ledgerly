@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import ReactDOM from 'react-dom';
 import { X, TrendingDown, IndianRupee, Calendar, Tag } from 'lucide-react';
 import axiosInstance from '../../utils/axios';
 import Picker from "@emoji-mart/react";
@@ -11,9 +10,9 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
   const [source, setSource] = useState("");
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState("");
-  const [icon, setIcon] = useState('💸');
-  const [error, setError] = useState('');
+  const [icon, setIcon] = useState('💰');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [error, setError] = useState('');
 
   const handleSourceChange = (e) => {
     setSource(e.target.value);
@@ -26,11 +25,10 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
   const handleDateChange = (e) => {
     setDate(e.target.value);
   };
-
   const handleEmojiSelect = (emojiData) => {
     setIcon(emojiData.native);
     setShowEmojiPicker(false);
-  };
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -45,7 +43,26 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
       setError("Enter a valid amount");
       return;
     }
+    const checkBalance = async (amountVal) => {
+      try {
+        const response = await axiosInstance.get(API_PATHS.DASHBOARD.GET_DASHBOARD);
+        if (response.data.success) {
+          const balance = response.data.totalBalance;
+          if (balance < amountVal) {
+            setError("Insufficient balance");
+            return false;
+          }
+        }
+        return true;
+      } catch (err) {
+        console.error('Error checking balance:', err);
+        setError(err.response?.data?.message || 'Failed to check balance');
+        return false;
+      }
+    };
 
+    const isBalanceSufficient = await checkBalance(parseFloat(amount));
+    if (!isBalanceSufficient) return;
     try {
       const response = await axiosInstance.post(API_PATHS.EXPENSES.ADD_EXPENSES, {
         source,
@@ -59,7 +76,7 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
         setSource('');
         setAmount('');
         setDate('');
-        setIcon('💸');
+        setIcon('💰');
         onSuccess?.();
         onClose();
       } else {
@@ -71,6 +88,8 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
     }
   };
 
+
+
   const handleOverlayClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -79,7 +98,7 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
 
   if (!isOpen) return null;
 
-  return ReactDOM.createPortal(
+  return (
     <div className="income-modal-overlay" onClick={handleOverlayClick}>
       <div className="income-modal-content">
         <div className="income-modal-header">
@@ -103,21 +122,41 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
           <div className="income-form-field">
             <label htmlFor="source" className="income-form-label">
               <Tag className="field-icon" size={18} />
-              Expense Source
+              Source
             </label>
             <input
               type="text"
               id="source"
-              name="source"
               value={source}
               onChange={handleSourceChange}
               className="income-form-input"
-              placeholder="e.g., Groceries, Rent, Netflix"
+              placeholder='eg. Shopping, food, travel etc.'
               required
             />
           </div>
 
-          {/* Icon Picker */}
+          {/* Amount Field */}
+          <div className="income-form-field">
+            <label htmlFor="amount" className="income-form-label">
+              <IndianRupee className="field-icon" size={18} />
+              Amount
+            </label>
+            <input
+              type="number"
+              id="amount"
+              name="amount"
+              value={amount}
+              onChange={handleAmountChange}
+              className="income-form-input"
+              placeholder="0.00"
+              min="0"
+              step="0.01"
+              required
+            />
+
+            {/* Icon Picker */}
+
+          </div>
           <div className="income-form-field">
             <label className="income-form-label">
               <span style={{ fontSize: '18px', marginRight: '8px' }}>🎨</span>
@@ -148,26 +187,6 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
             </div>
           </div>
 
-          {/* Amount Field */}
-          <div className="income-form-field">
-            <label htmlFor="amount" className="income-form-label">
-              <IndianRupee className="field-icon" size={18} />
-              Amount
-            </label>
-            <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={amount}
-              onChange={handleAmountChange}
-              className="income-form-input"
-              placeholder="0.00"
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-
           {/* Date Field */}
           <div className="income-form-field">
             <label htmlFor="date" className="income-form-label">
@@ -184,6 +203,7 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
               required
             />
           </div>
+
 
           {/* Submit Button */}
           <div className="income-modal-actions">
@@ -203,8 +223,7 @@ const AddExpense = ({ isOpen, onClose, onSuccess }) => {
           </div>
         </form>
       </div>
-    </div>,
-    document.body
+    </div>
   );
 };
 

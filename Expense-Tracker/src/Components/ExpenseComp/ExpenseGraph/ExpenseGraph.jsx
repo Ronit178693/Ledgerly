@@ -85,31 +85,33 @@ const ExpenseGraph = ({ onExpenseAdded }) => {
   };
 
   return (
-    <div className="income-graph-container">
-      <div className="income-graph-header">
-        <h2 className="income-graph-title">Expense Overview</h2>
-        <button
-          className="add-income-header-btn"
-          onClick={handleOpenModal}
-          aria-label="Add new expense"
-        >
-          <Plus size={20} />
-          <span>Add Expense</span>
-        </button>
-      </div>
+    <>
+      <div className="income-graph-container">
+        <div className="income-graph-header">
+          <h2 className="income-graph-title">Expense Overview</h2>
+          <button
+            className="add-income-header-btn"
+            onClick={handleOpenModal}
+            aria-label="Add new expense"
+          >
+            <Plus size={20} />
+            <span>Add Expense</span>
+          </button>
+        </div>
 
-      <div className="income-graph-wrapper">
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-            Loading expenses...
-          </div>
-        ) : chartData.labels.length > 0 ? (
-          <PieChart data={chartData} />
-        ) : (
-          <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
-            No expenses recorded yet. Add your first expense!
-          </div>
-        )}
+        <div className="income-graph-wrapper">
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+              Loading expenses...
+            </div>
+          ) : chartData.labels.length > 0 ? (
+            <PieChart data={chartData} />
+          ) : (
+            <div style={{ textAlign: 'center', padding: '2rem', color: '#94a3b8' }}>
+              No expenses recorded yet. Add your first expense!
+            </div>
+          )}
+        </div>
       </div>
 
       <AddExpense
@@ -117,7 +119,7 @@ const ExpenseGraph = ({ onExpenseAdded }) => {
         onClose={handleCloseModal}
         onSuccess={handleSuccess}
       />
-    </div>
+    </>
   );
 };
 

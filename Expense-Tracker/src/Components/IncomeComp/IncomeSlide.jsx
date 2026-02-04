@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { TrendingUp, Calendar, DollarSign, Trash2 } from 'lucide-react';
+import { TrendingUp, Calendar} from 'lucide-react';
 import axiosInstance from '../../utils/axios';
 import { API_PATHS } from '../../utils/apiPaths';
 import '../../Pages/Income/Income.css';
@@ -32,9 +32,7 @@ const IncomeSlide = forwardRef((props, ref) => {
   }, []);
 
   const formatDate = (dateString) => {
-    if (!dateString) {
-      return '';
-    }
+    if (!dateString) return '';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
       day: 'numeric',
@@ -52,26 +50,9 @@ const IncomeSlide = forwardRef((props, ref) => {
     }).format(amount);
   };
 
-  const handleDeleteIncome = async (incomeId) => {
-    if (window.confirm('Are you sure you want to delete this income record?')) {
-      try {
-        const response = await axiosInstance.delete(
-          API_PATHS.INCOME.DELETE_INCOME(incomeId)
-        );
-        if (response.data.success) {
-          setIncomes(incomes.filter(inc => inc._id !== incomeId));
-        } else {
-          alert('Failed to delete income');
-        }
-      } catch (error) {
-        console.error('Error deleting income:', error);
-        alert('Error deleting income');
-      }
-    }
-  };
-
   return (
     <div className="income-slide-container">
+      <h2 className="income-graph-title" style={{ marginBottom: '2rem' }}>Recent Income</h2>
       <div className="income-grid">
         {/* Income Source Cards */}
         {incomes.map((income, index) => (
@@ -92,40 +73,19 @@ const IncomeSlide = forwardRef((props, ref) => {
                 </p>
               </div>
             </div>
-
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div className="income-amount-section">
-                <DollarSign className="amount-icon" size={20} />
-                <span className="income-amount">{formatAmount(income.amount || 0)}</span>
-              </div>
-
-              <button
-                onClick={() => handleDeleteIncome(income._id)}
-                className="delete-btn"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  cursor: 'pointer',
-                  color: '#ef4444',
-                  padding: '4px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  transition: 'all 0.2s ease',
-                  marginLeft: 'auto'
-                }}
-                onMouseEnter={(e) => e.target.style.transform = 'scale(1.2)'}
-                onMouseLeave={(e) => e.target.style.transform = 'scale(1)'}
-                aria-label="Delete income"
-              >
-                <Trash2 size={18} />
-              </button>
+            <div className="income-amount-section">
+      
+              <span className="income-amount">{formatAmount(income.amount || 0)}</span>
             </div>
           </div>
         ))}
+
       </div>
     </div>
   );
 });
+
+IncomeSlide.displayName = 'IncomeSlide';
 
 IncomeSlide.displayName = 'IncomeSlide';
 

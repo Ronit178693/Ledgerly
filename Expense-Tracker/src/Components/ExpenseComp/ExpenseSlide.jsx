@@ -1,5 +1,5 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
-import { Trash2, Calendar, DollarSign } from 'lucide-react';
+import { Trash2, Calendar } from 'lucide-react';
 import axiosInstance from '../../utils/axios';
 import { API_PATHS } from '../../utils/apiPaths';
 import '../../Pages/Income/Income.css';
@@ -105,7 +105,7 @@ const ExpenseSlide = forwardRef((props, ref) => {
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div className="income-amount-section">
-                  <DollarSign size={20} style={{ marginRight: '4px' }} />
+                  
                   <span className="income-amount">{formatAmount(expense.amount || 0)}</span>
                 </div>
                 <button
